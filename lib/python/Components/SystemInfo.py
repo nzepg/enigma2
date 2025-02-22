@@ -304,7 +304,7 @@ SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S
 SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S2 NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM45308X FBC", "BCM3158"]
 SystemInfo["FCCactive"] = False
 
-# The remote names used in the code below are the names used by oe-mirrors/branding-module, 
+# The remote names used in the code below are the names used by oe-mirrors/branding-module,
 # so we must compare against rc_model.getRcFolder() which is also part of branding-module.
 # Remote names at oe-alliance/remotes are different in some cases so we must stick to
 # one standard on both sides of the comparison.
