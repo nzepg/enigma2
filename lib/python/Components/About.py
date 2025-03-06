@@ -1,33 +1,89 @@
-from fcntl import ioctl
-from socket import AF_INET, SOCK_DGRAM, inet_ntoa, socket
-from struct import pack
+import fcntl
+import socket
+import struct
 
 from os import path as ospath
-from sys import modules
+from sys import modules, version_info
 from time import time
+from Tools.Directories import fileExists
+
+from enigma import getEnigmaLastCommitDate, getEnigmaLastCommitHash
 
 
-def getCPUArch(MODEL):
-	if MODEL.startswith("osmio4k"):
-		CPUArch = "ARM V7"
-	elif "ARM" in getCPUString():
-		CPUArch = getCPUString()
+def getVersionString():
+	from Components.SystemInfo import SystemInfo
+	return SystemInfo["imageversion"]
+
+
+def getFlashDateString():
+	if ospath.isfile('/etc/install'):
+		with open("/etc/install", "r") as f:
+			return _formatDate(f.read())
 	else:
-		CPUArch = _("Mipsel")
-	return [CPUArch, getCPUSpeedString(MODEL), getCpuCoresString()]
+		return _("unknown")
 
 
-def getChipSetString(MODEL):
+def driversDate():
+	from Components.SystemInfo import SystemInfo
+	return _formatDate(SystemInfo["driversdate"])
+
+
+def getLastCommitDate():
+	return _formatDate(getEnigmaLastCommitDate().replace("-", ""))
+
+
+def getLastCommitHash():
+	return getEnigmaLastCommitHash()[:7]
+
+
+def _formatDate(Date):
+	# expected input = "YYYYMMDD"
+	if len(Date) != 8 or not Date.isnumeric():
+		return _("unknown")
+	from Components.config import config
+	return config.usage.date.dateFormatAbout.value % {"year": Date[0:4], "month": Date[4:6], "day": Date[6:8]}
+
+
+def getGStreamerVersionString():
+	try:
+		from glob import glob
+		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+		return "%s" % gst[1].split("+")[0].split("-")[0].replace("\n", "")
+	except:
+		return _("unknown")
+
+
+def getKernelVersionString():
+	try:
+		return open("/proc/version").read().split(" ", 3)[2].split("-", 1)[0]
+	except:
+		return _("unknown")
+
+
+def getIsBroadcom():
+	try:
+		for x in open("/proc/cpuinfo").readlines():
+			x = x.split(": ")
+			if len(x) > 1 and (x[0].startswith("Hardware") and x[1].split(" ")[0] == "Broadcom" or x[0].startswith("system type") and x[1].startswith("BCM")):
+				return True
+	except:
+		pass
+	return False
+
+
+def getChipSetString():
 	try:
 		return str(open("/proc/stb/info/chipset").read().lower().replace("\n", "").replace("brcm", "").replace("bcm", ""))
 	except:
-		if MODEL in ("dm900", "dm920"):
-			return "7252s"
+		if fileExists("/proc/stb/info/model"):
+			getModel = str(open("/proc/stb/info/model").read())
+			if getModel[0:5] in ("dm900", "dm920"):
+				return "7252s"
 		else:
 			return "unknown"
 
 
-def getCPUSpeedMHzInt(MODEL):
+def getCPUSpeedMHzInt():
 	cpu_speed = 0
 	try:
 		for x in open("/proc/cpuinfo").readlines():
@@ -39,6 +95,7 @@ def getCPUSpeedMHzInt(MODEL):
 		print("[About] getCPUSpeedMHzInt, /proc/cpuinfo not available")
 
 	if cpu_speed == 0:
+		from Components.SystemInfo import MODEL
 		if MODEL in ("h7", "hd51", "sf4008", "osmio4k", "osmio4kplus", "osmini4k"):
 			try:
 				import binascii
@@ -47,8 +104,6 @@ def getCPUSpeedMHzInt(MODEL):
 					cpu_speed = round(int(binascii.hexlify(clockfrequency), 16) // 1000000, 1)
 			except IOError:
 				cpu_speed = 1700
-		elif MODEL in ('hzero', 'h8', 'sfx6008', 'sfx6018'):
-			cpu_speed = 1200
 		else:
 			try:  # Solo4K sf8008
 				with open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", "r") as file:
@@ -58,15 +113,24 @@ def getCPUSpeedMHzInt(MODEL):
 	return int(cpu_speed)
 
 
-def getCPUSpeedString(MODEL):
-	cpu_speed = float(getCPUSpeedMHzInt(MODEL))
+def getCPUSpeedString():
+	cpu_speed = float(getCPUSpeedMHzInt())
 	if cpu_speed > 0:
 		if cpu_speed >= 1000:
-			cpu_speed = f"{str(round(cpu_speed / 1000, 1))} GHz"
+			cpu_speed = "%s GHz" % str(round(cpu_speed / 1000, 1))
 		else:
-			cpu_speed = f"{str(int(cpu_speed))} MHz"
+			cpu_speed = "%s MHz" % str(int(cpu_speed))
 		return cpu_speed
 	return "unknown"
+
+
+def getCPUArch():
+	from Components.SystemInfo import MODEL
+	if MODEL.startswith("osmio4k"):
+		return "ARM V7"
+	if "ARM" in getCPUString():
+		return getCPUString()
+	return _("Mipsel")
 
 
 def getCPUString():
@@ -95,19 +159,19 @@ def getCpuCoresString():
 
 
 def _ifinfo(sock, addr, ifname):
-	iface = pack('256s', bytes(ifname[:15], 'utf-8'))
-	info = ioctl(sock.fileno(), addr, iface)
+	iface = struct.pack('256s', bytes(ifname[:15], 'utf-8'))
+	info = fcntl.ioctl(sock.fileno(), addr, iface)
 	if addr == 0x8927:
 		return ''.join(['%02x:' % ord(chr(char)) for char in info[18:24]])[:-1].upper()
 	else:
-		return inet_ntoa(info[20:24])
+		return socket.inet_ntoa(info[20:24])
 
 
 def getIfConfig(ifname):
 	ifreq = {"ifname": ifname}
 	infos = {}
-	sock = socket(AF_INET, SOCK_DGRAM)
-	# Offsets defined in /usr/include/linux/sockios.h on linux 2.6.
+	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	# offsets defined in /usr/include/linux/sockios.h on linux 2.6
 	infos["addr"] = 0x8915  # SIOCGIFADDR
 	infos["brdaddr"] = 0x8919  # SIOCGIFBRDADDR
 	infos["hwaddr"] = 0x8927  # SIOCSIFHWADDR
@@ -115,11 +179,10 @@ def getIfConfig(ifname):
 	try:
 		for k, v in infos.items():
 			ifreq[k] = _ifinfo(sock, v, ifname)
-	except Exception as ex:
-		print(f"[About] getIfConfig Ex: {str(ex)}")
+	except:
 		pass
 	sock.close()
-	print(f"[About] ifreq:{ifreq}")
+	print("[About] ifreq: ", ifreq)
 	return ifreq
 
 
@@ -127,9 +190,13 @@ def getIfTransferredData(ifname):
 	with open("/proc/net/dev", "r") as f:
 		for line in f:
 			if ifname in line:
-				data = line.split(f"{ifname}:")[1].split()
+				data = line.split("%s:" % ifname)[1].split()
 				rx_bytes, tx_bytes = (data[0], data[8])
 				return rx_bytes, tx_bytes
+
+
+def getPythonVersionString():
+	return "%s.%s.%s" % (version_info.major, version_info.minor, version_info.micro)
 
 
 def getBoxUptime():

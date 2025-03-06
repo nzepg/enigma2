@@ -6,7 +6,7 @@ from re import split
 from enigma import Misc_Options, eDVBCIInterfaces, eDVBResourceManager
 
 from Components.RcModel import rc_model
-from Tools.Directories import fileCheck, fileExists, fileHas, pathExists, resolveFilename, SCOPE_LIBDIR, SCOPE_SKIN, fileReadLine, fileReadLines
+from Tools.Directories import fileCheck, fileExists, fileHas, pathExists, resolveFilename, SCOPE_LIBDIR, SCOPE_SKIN, fileReadLines
 from Tools.HardwareInfo import HardwareInfo
 
 
@@ -74,21 +74,13 @@ BoxInfo = BoxInformation()
 SystemInfo = BoxInfo.boxInfo
 
 
-if BoxInfo.getItem("model") in ("dm900", "dm920", "et13000"):
-	CHIPSET = "7252S"
-elif BoxInfo.getItem("model") in ("hd51", "vs1500", "h7", "h17"):
-	CHIPSET = "7251S"
-else:
-	chipset = fileReadLine("/proc/stb/info/chipset")
-	CHIPSET = chipset.lower().replace("\n", "").replace("bcm", "").replace("brcm", "").upper()
-
 ARCHITECTURE = BoxInfo.getItem("architecture")
 BRAND = BoxInfo.getItem("brand")
 MODEL = BoxInfo.getItem("model")
 RCNAME = BoxInfo.getItem('rcname')
 SOC_FAMILY = BoxInfo.getItem("socfamily")
 SOC_BRAND = split(r'(\d.*)', SOC_FAMILY)[0]
-KERNEL = BoxInfo.getItem("kernel")
+CHIPSET = split(r'(\d.*)', SOC_FAMILY)[1]
 DISPLAYTYPE = BoxInfo.getItem("displaytype")
 MTDROOTFS = BoxInfo.getItem("mtdrootfs")
 DISPLAYMODEL = BoxInfo.getItem("displaymodel")
