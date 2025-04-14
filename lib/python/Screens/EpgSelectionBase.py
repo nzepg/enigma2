@@ -456,6 +456,7 @@ class EPGSelectionBase(Screen, HelpableScreen):
 			del self.eventviewDialog
 			self.eventviewDialog = None
 
+
 class EPGServiceZap:
 	def __init__(self, zapFunc):
 		self.__originalPlayingService = self.session.nav.getCurrentlyPlayingServiceOrGroup() or eServiceReference()
