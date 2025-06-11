@@ -654,7 +654,7 @@ class VIXImageManager(Screen):
 			self.session.open(TryQuitMainloop, 2)
 		else:
 			self.close
-			
+
 	def dualBoot(self):
 		rootfs2 = False
 		kernel2 = False
