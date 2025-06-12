@@ -17750,7 +17750,7 @@ msgid ""
 "Do you want to allow this?"
 msgstr ""
 "Laitteesi %s %s aikoo tehdä täyden varmuuskopion, ja se voi kestää noin kuusi minuuttia.\n"
-"\"Sallitko tämän?"
+"Sallitko tämän?"
 
 #, python-format
 msgid ""
