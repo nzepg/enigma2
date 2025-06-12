@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 15:27+0300\n"
-"PO-Revision-Date: 2025-06-12 18:25+0300\n"
+"POT-Creation-Date: 2025-06-12 19:41+0300\n"
+"PO-Revision-Date: 2025-06-12 19:59+0300\n"
 "Last-Translator: Orlandox\n"
 "Language-Team: timoj/Kojo/Samzam/Orlandox\n"
 "Language: fi\n"
@@ -805,8 +805,8 @@ msgid "%d marked items"
 msgstr "%d merkattua kohdetta"
 
 #, python-format
-msgid "%d milisecond"
-msgid_plural "%d miliseconds"
+msgid "%d millisecond"
+msgid_plural "%d milliseconds"
 msgstr[0] "%d millisekunti"
 msgstr[1] "%d millisekuntia"
 
@@ -937,14 +937,6 @@ msgstr "%m/%d/%Y"
 #, python-format
 msgid "%s"
 msgstr "%s"
-
-#, python-format
-msgid "%s "
-msgstr "%s "
-
-#, python-format
-msgid "%s   "
-msgstr "%s   "
 
 #, python-format
 msgid "%s %s advanced remote control (native)"
