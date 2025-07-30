@@ -3,7 +3,7 @@ from os import path
 from enigma import eAVSwitch, eDVBVolumecontrol, getDesktop
 
 from Components.config import ConfigBoolean, ConfigEnableDisable, ConfigNothing, ConfigSelection, ConfigSelectionNumber, ConfigSlider, ConfigSubDict, ConfigSubsection, ConfigYesNo, NoSave, config
-from Components.SystemInfo import SystemInfo, BOXTYPE, MODEL
+from Components.SystemInfo import SystemInfo
 from Tools.CList import CList
 from Tools.Directories import isPluginInstalled
 
@@ -43,7 +43,7 @@ class AVSwitch:
 				"multi": {50: "2160p50", 60: "2160p"},
 				"auto": {50: "2160p50", 60: "2160p", 24: "2160p24"}}
 
-	if MODEL in ("dm900", "dm920"):
+	if SystemInfo["dmVideoRates"]:
 		rates["2160p"] = {"50Hz": {50: "2160p50"},
 				"60Hz": {60: "2160p60"},
 				"multi": {50: "2160p50", 60: "2160p60"},
@@ -839,10 +839,8 @@ def InitAVSwitch():
 				open("/proc/stb/vmpeg/0/pep_apply", "w").write("1")
 			except (IOError, OSError):
 				print("[AVSwitch] couldn't write pep_scaler_sharpness")
-		if BOXTYPE in ("gbquad", "gbquadplus"):
-			config.av.scaler_sharpness = ConfigSlider(default=5, limits=(0, 26))
-		else:
-			config.av.scaler_sharpness = ConfigSlider(default=13, limits=(0, 26))
+		scalerDefault = 5 if SystemInfo["scalerSharpnessWorkaround"] else 13
+		config.av.scaler_sharpness = ConfigSlider(default=scalerDefault, limits=(0, 26))
 		config.av.scaler_sharpness.addNotifier(setScaler_sharpness)
 	else:
 		config.av.scaler_sharpness = NoSave(ConfigNothing())
