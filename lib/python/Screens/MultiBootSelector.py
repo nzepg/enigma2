@@ -351,10 +351,10 @@ class ChkrootInit(Screen):
 
 		self.session.openWithCallback(disableChkrootCallback, MessageBox, _("Permanently disable the MultiBoot option?"), simple=True)
 
-
 	def UBIMBInit(self):
 		print(f"[MultiBootSelector][UBIMBInit]")	
 		self.session.open(UBISlotManager)
+
 
 class UBISlotManager(Setup):
 	def __init__(self, session):
@@ -523,6 +523,7 @@ class UBISlotManager(Setup):
 			ACTION_SELECT: _("Select Device"),
 			ACTION_CREATE: _("Create Slots")
 		}.get(self.green, _("Invalid")))
+
 
 class MultiBootSelectorSummary(ScreenSummary):
 	def __init__(self, session, parent):
