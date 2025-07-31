@@ -352,7 +352,7 @@ class ChkrootInit(Screen):
 		self.session.openWithCallback(disableChkrootCallback, MessageBox, _("Permanently disable the MultiBoot option?"), simple=True)
 
 	def UBIMBInit(self):
-		print(f"[MultiBootSelector][UBIMBInit]")	
+		print(f"[MultiBootSelector][UBIMBInit]")
 		self.session.open(UBISlotManager)
 
 
@@ -404,7 +404,7 @@ class UBISlotManager(Setup):
 			self.showDeviceSelection()
 
 	def createSlots(self):
-		print("[UBISlotManager] createSlots DEBUG")	
+		print("[UBISlotManager] createSlots DEBUG")
 		if not self.UBISlotManagerDevice:
 			self.showDeviceSelection()
 			return
@@ -480,7 +480,7 @@ class UBISlotManager(Setup):
 		path = self.deviceData[selection][0]
 		name = self.deviceData[selection][1]
 		locations = self.UBISlotManagerLocation.getChoices()
-		print(f"[UBISlotManager] deviceSelectionCallback1: locations:{locations} path:{path} name:{name}")		
+		print(f"[UBISlotManager] deviceSelectionCallback1: locations:{locations} path:{path} name:{name}")
 		if (path, path) not in locations:
 			locations.append((path, path))
 			# print(f"[UBISlotManager] deviceSelectionCallback: locations:{locations}")
