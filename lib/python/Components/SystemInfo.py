@@ -203,6 +203,7 @@ def countFrontpanelLEDs():
 def hasInitCam():
 	return bool([f for f in listdir("/etc/init.d") if f.startswith("softcam.") and f != "softcam.None"])
 
+
 SystemInfo["CanChangeOsdAlpha"] = access('/proc/stb/video/alpha', R_OK) and True or False
 SystemInfo["CanChangeOsdPosition"] = (access('/proc/stb/fb/dst_left', R_OK) or access('/proc/stb/vmpeg/0/dst_left', R_OK)) and True or False
 SystemInfo["OsdSetup"] = SystemInfo["CanChangeOsdPosition"]
