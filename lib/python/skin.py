@@ -705,7 +705,7 @@ class AttributeParser:
 				"orBottomToTop": (self.guiObject.orVertical, True),
 				"orHorizontal": (self.guiObject.orHorizontal, False),
 				"orLeftToRight": (self.guiObject.orHorizontal, False),
-				"orRightToLeft": (self.guiObject.orHorizontal, True) } | (
+				"orRightToLeft": (self.guiObject.orHorizontal, True)} | (
 				{"orGrid": (self.guiObject.orGrid, False)} if hasattr(self.guiObject, "orGrid") else {}  # eListbox only
 			))[value])
 		except KeyError:
