@@ -697,6 +697,9 @@ class AttributeParser:
 		except KeyError:
 			print("[Skin] Error: Invalid scale '%s'!  Must be one of 'none', 'scale', 'scaleKeepAspect', 'scaleLeftTop', 'scaleLeftCenter', 'scaleLeftBotton', 'scaleCenterTop', 'scaleCenter', 'scaleCenterBotton', 'scaleRightTop', 'scaleRightCenter', 'scaleRightBottom', 'moveLeftTop', 'moveLeftCenter', 'moveLeftBotton', 'moveCenterTop', 'moveCenter', 'moveCenterBottom', 'moveRightTop', 'moveRightCenter', 'moveRightBottom' ('Center'/'Centre'/'Middle' are equivalent)." % value)
 
+	def listOrientation(self, value):  # For compatibility with skins written for OpenATV that use this attribute
+		self.orientation({"vertical": "orVertical", "horizontal": "orHorizontal", "grid": "orGrid"}.get(value, value))
+
 	def orientation(self, value):  # Used by eSlider and eListBox.
 		try:
 			self.guiObject.setOrientation(*({
